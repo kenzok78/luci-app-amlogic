@@ -1,0 +1,72 @@
+name: Build and Release luci-app-amlogic for OpenWrt 24.10.5
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ccache ecj fastjar file g++ gawk \
+          gettext git java-propose-classpath intltool libelf-dev libglib2.0-dev \
+          libgtk2.0-dev libncurses5-dev libncursesw5-dev libssl-dev python3 \
+          python3-distutils python3-pyelftools unzip wget xsltproc zlib1g-dev zstd
+
+      - name: Download and extract OpenWrt SDK
+        run: |
+          wget https://downloads.openwrt.org/releases/24.10.5/targets/armsr/armv8/openwrt-sdk-24.10.5-armsr-armv8_gcc-13.3.0_musl.Linux-x86_64.tar.zst
+          tar -I zstd -xf openwrt-sdk-24.10.5-armsr-armv8_gcc-13.3.0_musl.Linux-x86_64.tar.zst
+          mv openwrt-sdk-24.10.5-armsr-armv8_gcc-13.3.0_musl.Linux-x86_64 openwrt-sdk
+
+      - name: Update feeds in SDK
+        working-directory: openwrt-sdk
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          ./scripts/feeds install luci luci-base luci-lib-ipkg luci-i18n-base-ru kmod-tun
+
+      - name: Add luci-app-amlogic from ru_lang branch
+        working-directory: openwrt-sdk
+        run: |
+          git clone -b ru_lang https://github.com/mrnman66/luci-app-amlogic.git package/luci-app-amlogic
+          ls -d package/luci-app-amlogic
+
+      - name: Configure OpenWrt
+        working-directory: openwrt-sdk
+        run: |
+          echo "CONFIG_PACKAGE_luci-app-amlogic=y" >> .config
+          echo "CONFIG_PACKAGE_luci-i18n-amlogic-ru=y" >> .config
+          echo "CONFIG_LUCI_LANG_ru=y" >> .config
+          make defconfig
+          cat .config | grep luci-app-amlogic
+          cat .config | grep luci-i18n-amlogic-ru
+
+      - name: Compile luci-app-amlogic package
+        working-directory: openwrt-sdk
+        run: |
+          make package/luci-app-amlogic/{clean,compile} V=99 -j$(nproc) || { cat tmp/.packagedeps-luci-app-amlogic; exit 1; }
+
+      - name: Check compiled packages
+        working-directory: openwrt-sdk
+        run: |
+          find bin/packages/ -type f -name "*.ipk"
+
+      - name: Collect compiled packages
+        run: |
+          mkdir -p artifacts
+          find openwrt-sdk/bin/packages/ -type f -name "luci-app-amlogic_*.ipk" -exec cp {} artifacts/ \;
+          find openwrt-sdk/bin/packages/ -type f -name "luci-i18n-amlogic-ru_*.ipk" -exec cp {} artifacts/ \;
+
+      - name: Create Release and Upload Packages
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: luci-app-amlogic Build ${{ github.run_number }}
+          body: Automated build of luci-app-amlogic and translations for OpenWrt 24.10.5 (armsr/armv8) from ru_lang branch
+          files: artifacts/*.ipk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
