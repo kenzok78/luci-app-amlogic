@@ -11,6 +11,10 @@ Using the OpenWrt system and Amlogic box plugin in the box requires the support 
 - If the OpenWrt you are currently using does not have this plugin, you can also install it manually. Use SSH to log in to any directory of the OpenWrt system, or in `System Menu` → `TTYD Terminal`, run the one-click installation command to automatically download and install this plugin.
 
 ```yaml
+curl -fsSL ophub.org/luci-app-amlogic | bash
+```
+or
+```yaml
 curl -fsSL git.io/luci-app-amlogic | bash
 ```
 
