@@ -1,3 +1,7 @@
+<div align="center">
+    <img src="https://github.com/user-attachments/assets/455ec33b-5a00-4881-9bb4-10d4aba42e89" alt="luci-app-amlogic" />
+</div>
+
 # luci-app-amlogic / 晶晨宝盒
 
 查看英文说明 | [View English description](README.md)

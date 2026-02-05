@@ -1,3 +1,7 @@
+<div align="center">
+    <img src="https://github.com/user-attachments/assets/9df399cc-9a81-48a6-91ab-d56056b82338" alt="luci-app-amlogic" />
+</div>
+
 # luci-app-amlogic / Amlogic Service
 
 View Chinese description  |  [查看中文说明](README.cn.md)
