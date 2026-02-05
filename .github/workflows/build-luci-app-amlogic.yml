@@ -1,0 +1,92 @@
+name: Build and Release luci-app-amlogic
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(curl -fsSL https://ophub.org/ubuntu2404-make-openwrt-depends)
+
+      - name: Download and extract OpenWrt SDK
+        run: |
+          wget https://downloads.openwrt.org/releases/24.10.5/targets/armsr/armv8/openwrt-sdk-24.10.5-armsr-armv8_gcc-13.3.0_musl.Linux-x86_64.tar.zst
+          tar -I zstd -xf openwrt-sdk-24.10.5-armsr-armv8_gcc-13.3.0_musl.Linux-x86_64.tar.zst
+          mv openwrt-sdk-24.10.5-armsr-armv8_gcc-13.3.0_musl.Linux-x86_64 openwrt-sdk
+
+      - name: Update feeds in SDK
+        working-directory: openwrt-sdk
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          ./scripts/feeds install luci luci-base luci-lib-ipkg luci-i18n-base-ru luci-i18n-base-zh-cn kmod-tun
+
+      - name: Add luci-app-amlogic package
+        working-directory: openwrt-sdk
+        run: |
+          git clone https://github.com/ophub/luci-app-amlogic.git package/luci-app-amlogic
+          ls -d package/luci-app-amlogic
+
+      - name: Configure OpenWrt
+        working-directory: openwrt-sdk
+        run: |
+          echo "CONFIG_PACKAGE_luci-app-amlogic=y" >> .config
+          echo "CONFIG_PACKAGE_luci-i18n-amlogic-ru=y" >> .config
+          echo "CONFIG_PACKAGE_luci-i18n-amlogic-zh-cn=y" >> .config
+          echo "CONFIG_LUCI_LANG_ru=y" >> .config
+          echo "CONFIG_LUCI_LANG_zh-cn=y" >> .config
+          make defconfig
+          cat .config | grep luci-app-amlogic
+          cat .config | grep luci-i18n-amlogic-ru
+          cat .config | grep luci-i18n-amlogic-zh-cn
+      - name: Compile luci-app-amlogic package
+        working-directory: openwrt-sdk
+        run: |
+          make package/luci-app-amlogic/{clean,compile} V=99 -j$(nproc) || { cat tmp/.packagedeps-luci-app-amlogic; exit 1; }
+
+      - name: Check compiled packages
+        working-directory: openwrt-sdk
+        run: |
+          find bin/packages/ -type f -name "*.ipk"
+
+      - name: Collect compiled packages
+        run: |
+          mkdir -p artifacts
+          find openwrt-sdk/bin/packages/ -type f -name "luci-app-amlogic*.ipk" -exec cp {} artifacts/ \;
+          find openwrt-sdk/bin/packages/ -type f -name "luci-i18n-amlogic*.ipk" -exec cp {} artifacts/ \;
+
+          echo "=== Files in artifacts directory ==="
+          ls -lh artifacts/
+
+          # Get the main package file (luci-app-amlogic)
+          PKG_FILE="$(find artifacts/ -name "luci-app-amlogic*.ipk" -type f | head -n 1)"
+          PKG_NAME="$(basename "${PKG_FILE}")"
+          echo "Found main package: ${PKG_NAME}"
+
+          # Get version from package name
+          VERSION=$(echo "${PKG_NAME}" | cut -d'_' -f2 | cut -d'-' -f1)
+          echo "Extracted Version: ${VERSION}"
+
+          # Set version as environment variable for later steps
+          echo "LUCI_VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Create Release and Upload Packages
+        uses: ncipollo/release-action@main
+        with:
+          tag: ${{ env.LUCI_VERSION }}
+          artifacts: artifacts/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          makeLatest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            - Supports management of Amlogic s9xxx, Allwinner, and Rockchip boxes.
+              The current functions include install OpenWrt to EMMC,
+              Manually Upload Updates / Download Updates Online to update the OpenWrt firmware or kernel,
+              Backup / Restore firmware config, Snapshot management, etc.
