@@ -71,7 +71,7 @@ sed -i "s|amlogic_kernel_path.*|amlogic_kernel_path 'https://github.com/USERNAME
 sed -i "s|amlogic_plugin_branch.*|amlogic_plugin_branch 'main'|g" package/luci-app-amlogic/root/etc/config/amlogic
 ```
 
-- При сборке OpenWrt достаточно изменить указанные 4 пункта для пользовательской настройки. Эти параметры также можно изменить после входа в систему OpenWrt через `Система` → `Сервис Amlogic`.
+- При сборке OpenWrt достаточно изменить указанные пункты для пользовательской настройки. Эти параметры также можно изменить после входа в систему OpenWrt через `Система` → `Сервис Amlogic`.
 
 ## Описание настроек плагина
 
@@ -79,13 +79,13 @@ sed -i "s|amlogic_plugin_branch.*|amlogic_plugin_branch 'main'|g" package/luci-a
 
 ### Раздел загрузки прошивки OpenWrt содержит три параметра
 
-1. Репозиторий загрузки прошивки OpenWrt: укажите адрес GitHub-репозитория, в котором вы компилируете OpenWrt (или репозиторий другого разработчика), например: `https://github.com/breakingbadboy/OpenWrt`. Кнопка `OpenWrt Compiler author` на главной странице плагина будет ссылаться на указанный здесь адрес (ссылка обновляется автоматически), что позволяет пользователям легко найти автора прошивки для общения и совместной работы.
+1. Репозиторий загрузки прошивки OpenWrt: укажите адрес GitHub-репозитория, в котором вы компилируете OpenWrt (или репозиторий другого разработчика), например: `https://github.com/ophub/amlogic-s9xxx-openwrt`. Кнопка `OpenWrt Compiler author` на главной странице плагина будет ссылаться на указанный здесь адрес (ссылка обновляется автоматически), что позволяет пользователям легко найти автора прошивки для общения и совместной работы.
 
 2. Ключевое слово тегов в Releases: данное ключевое слово должно позволять отличать прошивку от образов для других архитектур (x86, R2S и т. д.), чтобы по нему можно было точно найти соответствующую прошивку OpenWrt.
 
 3. Расширение файлов OpenWrt: поддерживаемые форматы — `.img.gz`, `.img.xz` и `.7z`. Формат `.img` не поддерживается из-за большого размера файла и низкой скорости загрузки.
 
-- При именовании файлов прошивки `OpenWrt` в Releases указывайте `модель SoC` и `версию ядра`: openwrt_ `{soc}`_ xxx_`{kernel}`_ xxx.img.gz, например: openwrt_ `s905d`_ n1_R21.8.6_k`5.15.25`-flippy-62+o.7z. Поддерживаемые модели `SoC`: `s905x3`, `s905x2`, `s905x`, `s905w`, `s905d`, `s922x`, `s912`, `l1pro`, `beikeyun`, `vplus`. Поддерживаемые версии ядра: `5.10.xxx`, `5.15.xxx` и другие.
+- При именовании файлов прошивки `OpenWrt` в Releases указывайте `модель SoC` и `версию ядра`: `openwrt_{soc}_xxx_{kernel}_xxx.img.gz`, например: `openwrt_s905d_n1_R21.8.6_k5.15.25-flippy-62+o.7z`. Поддерживаемые модели `SoC`: `s905x3`, `s905x2`, `s905x`, `s905w`, `s905d`, `s922x`, `s912`, `l1pro`, `beikeyun`, `vplus`. Поддерживаемые версии ядра: `5.10.xxx`, `5.15.xxx` и другие.
 
 ### Раздел загрузки ядра содержит два параметра
 
@@ -111,7 +111,7 @@ sed -i "s|amlogic_plugin_branch.*|amlogic_plugin_branch 'main'|g" package/luci-a
 
 ### Описание настроек по умолчанию
 
-- Служба загрузки прошивки OpenWrt по умолчанию для этого плагина ( [Полная версия](https://github.com/breakingbadboy/OpenWrt/releases/tag/ARMv8) | [Мини-версия](https://github.com/breakingbadboy/OpenWrt/releases/tag/armv8_mini) | [Версия от Flippy](https://github.com/breakingbadboy/OpenWrt/releases/tag/flippy_openwrt) ) предоставлена [breakingbadboy](https://github.com/breakingbadboy/OpenWrt). Он является ключевым сопровождающим сообщества Flippy, глубоко разбирается в сборке OpenWrt и прекрасно знаком с установкой и настройкой различных ARM-устройств. Если у вас возникнут вопросы по сборке или использованию OpenWrt, обращайтесь в сообщество или оставляйте отзывы на его странице GitHub.
+- Служба загрузки прошивки OpenWrt по умолчанию для этого плагина предоставляется [https://github.com/ophub/amlogic-s9xxx-openwrt](https://github.com/ophub/amlogic-s9xxx-openwrt). Если у вас возникнут вопросы при сборке или использовании OpenWrt, оставляйте отзывы на странице [Issues](https://github.com/ophub/amlogic-s9xxx-openwrt/issues).
 
 - Ядро OpenWrt по умолчанию для плагина предоставлено репозиторием [https://github.com/ophub/kernel](https://github.com/ophub/kernel). Ядра под тегом [kernel_flippy](https://github.com/ophub/kernel/releases/tag/kernel_flippy) — это стабильные ядра мейнлайна, скомпилированные и опубликованные разработчиком [flippy](https://github.com/unifreq). В тегах [kernel_rk3588](https://github.com/ophub/kernel/releases/tag/kernel_rk3588) и [kernel_rk35xx](https://github.com/ophub/kernel/releases/tag/kernel_rk35xx) ядра с именем, содержащим `flippy`, — это специализированные ядра для Rockchip от того же разработчика, остальные скомпилированы [ophub/kernel](https://github.com/ophub/kernel). Под тегом [kernel_stable](https://github.com/ophub/kernel/releases/tag/kernel_stable) находятся стабильные ядра мейнлайна от [ophub/kernel](https://github.com/ophub/kernel).
 
@@ -137,7 +137,7 @@ sed -i "s|amlogic_plugin_branch.*|amlogic_plugin_branch 'main'|g" package/luci-a
 
 ## Инструкция по использованию в KVM-виртуальной машине
 
-На устройствах с достаточной производительностью можно сначала установить систему [Armbian](https://github.com/ophub/amlogic-s9xxx-armbian), а затем использовать KVM-виртуальные машины для параллельной работы нескольких систем. Образ системы OpenWrt можно создать с помощью скрипта [mk_qemu-aarch64_img.sh](https://github.com/unifreq/openwrt_packit/blob/master/mk_qemu-aarch64_img.sh), разработанного [unifreq](https://github.com/unifreq/openwrt_packit); инструкции по установке и использованию приведены в документе [qemu-aarch64-readme.md](https://github.com/unifreq/openwrt_packit/blob/master/files/qemu-aarch64/qemu-aarch64-readme.md). Прошивка OpenWrt QEMU для функции `Онлайн-загрузка и обновление` предоставлена [breakingbadboy](https://github.com/breakingbadboy/OpenWrt).
+На устройствах с достаточной производительностью можно сначала установить систему [Armbian](https://github.com/ophub/amlogic-s9xxx-armbian), а затем использовать KVM-виртуальные машины для параллельной работы нескольких систем. Образ системы OpenWrt можно создать с помощью скрипта [mk_qemu-aarch64_img.sh](https://github.com/unifreq/openwrt_packit/blob/master/mk_qemu-aarch64_img.sh), разработанного [unifreq](https://github.com/unifreq/openwrt_packit); инструкции по установке и использованию приведены в документе [qemu-aarch64-readme.md](https://github.com/unifreq/openwrt_packit/blob/master/files/qemu-aarch64/qemu-aarch64-readme.md).
 
 Плагин работает в KVM-виртуальной машине точно так же, как и при использовании OpenWrt непосредственно на устройстве.
 
@@ -146,6 +146,11 @@ sed -i "s|amlogic_plugin_branch.*|amlogic_plugin_branch 'main'|g" package/luci-a
 Шаг 1. Компиляция файла Rootfs: используя исходный код OpenWrt, в разделе `Target System` выберите `Arm SystemReady (EFI) compliant`, в `Subtarget` — `64-bit (armv8) machines`, в `Target Profile` — `Generic EFI Boot`, и добавьте [обязательные пакеты](https://github.com/ophub/amlogic-s9xxx-openwrt/blob/main/documents/README.md#1011-required-openwrt-options) для компиляции файла `rootfs.tar.gz` OpenWrt.
 
 Шаг 2. Упаковка специализированной прошивки OpenWrt для конкретных устройств: используйте скрипты от [flippy](https://github.com/unifreq/openwrt_packit) или [ophub](https://github.com/ophub/amlogic-s9xxx-openwrt) для создания специализированной прошивки. Подробные инструкции по использованию см. в соответствующих репозиториях.
+
+## Описание нумерации версий плагина
+
+- Версия плагина использует формат даты + внутридневного порядкового номера `YY.MM.DDNN`. Например, `26.10.0101` — первый релиз 1 октября 2026 года, `26.10.0102` — второй релиз того же дня, и так далее.
+- На странице Releases доступны пакеты для веток Lua и JavaScript: версия Lua (ветка lua) имеет тег `YY.MM.DDNN`, а версия JavaScript (ветка main) — `YY.MM.DDNN-js`.
 
 ## Интерфейс плагина
 
@@ -167,4 +172,4 @@ sed -i "s|amlogic_plugin_branch.*|amlogic_plugin_branch 'main'|g" package/luci-a
 
 ## Лицензия
 
-The luci-app-amlogic © OPHUB is licensed under [GPL-2.0](https://github.com/ophub/luci-app-amlogic/blob/main/LICENSE)
+luci-app-amlogic © OPHUB is licensed under [GPL-2.0](https://github.com/ophub/luci-app-amlogic/blob/main/LICENSE)

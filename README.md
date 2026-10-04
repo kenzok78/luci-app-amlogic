@@ -6,7 +6,7 @@
 
 [English Instructions](README.md) | [中文说明](README.cn.md) | [Инструкция на русском](README.ru.md)
 
-This plugin supports online management of Amlogic S9xxx series (X96, HK1, H96, etc.), Allwinner (V-Plus Cloud), and Rockchip (BeikeYun, Chainedbox-L1-Pro, FastRhino-R66S/R68S, Radxa-5B/E25) boxes. It also supports usage within OpenWrt installed in KVM virtual machines running on the Armbian system. Current features include `installing OpenWrt to eMMC`, `manually uploading/updating online` OpenWrt firmware or kernel versions, `backup/restore OpenWrt configuration`, `snapshot management`, and `customizing firmware/kernel download site`, etc.
+This plugin supports online management of Amlogic S9xxx series (X96, HK1, H96, etc.), Allwinner (V-Plus Cloud), and Rockchip (BeikeYun, Chainedbox-L1-Pro, FastRhino-R66S/R68S, Radxa-5B/E25) boxes. It also supports usage within OpenWrt installed in KVM virtual machines running on the Armbian system. Current features include `installing OpenWrt to eMMC`, `manual upload update/online download update` of OpenWrt firmware or kernel versions, `backup/restore OpenWrt configuration`, `snapshot management`, and `customizing firmware/kernel download site`, etc.
 
 Running the OpenWrt system with the Amlogic Service plugin on the box requires certain [required software packages](https://github.com/ophub/amlogic-s9xxx-openwrt/blob/main/documents/README.md#1011-required-openwrt-options). When performing a `custom OpenWrt compilation`, please add them according to the instructions. When using the one-click script for `manual installation` in OpenWrt without the Amlogic Service plugin pre-compiled, if prompted about missing dependencies, please install them according to the log prompt (`System` > `Software Packages` > `Refresh List` > `Search for the corresponding package` > `Install`), then `retry`.
 
@@ -71,7 +71,7 @@ sed -i "s|amlogic_kernel_path.*|amlogic_kernel_path 'https://github.com/USERNAME
 sed -i "s|amlogic_plugin_branch.*|amlogic_plugin_branch 'main'|g" package/luci-app-amlogic/root/etc/config/amlogic
 ```
 
-- When compiling OpenWrt, modifying the above 4 items enables customization. These settings can also be modified after logging into the OpenWrt system via `System` → `Amlogic Service`.
+- When compiling OpenWrt, modifying the above items enables customization. These settings can also be modified after logging into the OpenWrt system via `System` → `Amlogic Service`.
 
 ## Plugin Settings Explanation
 
@@ -79,13 +79,13 @@ The plugin settings consist of 4 categories: OpenWrt firmware download, kernel d
 
 ### OpenWrt firmware download contains three options
 
-1. OpenWrt firmware download repository: Enter the GitHub repository where you compile OpenWrt (or another contributor's repository), such as: `https://github.com/breakingbadboy/OpenWrt`. The `OpenWrt Compiler author` button on the plugin's homepage will link to the URL entered here (the link updates automatically), making it easy for users to locate the firmware author for discussion and collaboration.
+1. OpenWrt firmware download repository: Enter the GitHub repository where you compile OpenWrt (or another contributor's repository), such as: `https://github.com/ophub/amlogic-s9xxx-openwrt`. The `OpenWrt Compiler author` button on the plugin's homepage will link to the URL entered here (the link updates automatically), making it easy for users to locate the firmware author for discussion and collaboration.
 
 2. Tags keyword in Releases: This keyword must distinguish the firmware from other architectures such as x86, R2S, etc., ensuring that the corresponding OpenWrt firmware can be accurately located.
 
 3. OpenWrt file suffix: Supported formats include `.img.gz`, `.img.xz`, and `.7z`. The `.img` format is not supported due to its large file size and slow download speed.
 
-- When naming `OpenWrt` firmware files in Releases, please include the `SoC model` and `kernel version`: openwrt_ `{soc}`_ xxx_`{kernel}`_ xxx.img.gz, for example: openwrt_ `s905d`_ n1_R21.8.6_k`5.15.25`-flippy-62+o.7z. Supported `SoC` models include: `s905x3`, `s905x2`, `s905x`, `s905w`, `s905d`, `s922x`, `s912`, `l1pro`, `beikeyun`, `vplus`. Supported `kernel versions` include `5.10.xxx`, `5.15.xxx`, etc.
+- When naming `OpenWrt` firmware files in Releases, please include the `SoC model` and `kernel version`: `openwrt_{soc}_xxx_{kernel}_xxx.img.gz`, for example: `openwrt_s905d_n1_R21.8.6_k5.15.25-flippy-62+o.7z`. Supported `SoC` models include: `s905x3`, `s905x2`, `s905x`, `s905w`, `s905d`, `s922x`, `s912`, `l1pro`, `beikeyun`, `vplus`. Supported `kernel versions` include `5.10.xxx`, `5.15.xxx`, etc.
 
 ### Kernel download address contains two options
 
@@ -111,12 +111,11 @@ The plugin settings consist of 4 categories: OpenWrt firmware download, kernel d
 
 ### Default Settings Description
 
-- The default OpenWrt firmware download service for this plugin ( [Comprehensive Version](https://github.com/breakingbadboy/OpenWrt/releases/tag/ARMv8) | [Mini Version](https://github.com/breakingbadboy/OpenWrt/releases/tag/armv8_mini) | [Flippy Shared Version](https://github.com/breakingbadboy/OpenWrt/releases/tag/flippy_openwrt) ) is supported by [breakingbadboy](https://github.com/breakingbadboy/OpenWrt). He is a core maintainer in the Flippy community, highly experienced in OpenWrt compilation, and proficient in the installation and configuration of various ARM devices. If you encounter any issues during OpenWrt compilation or usage, feel free to consult the community or submit feedback on his GitHub page.
+- The default OpenWrt firmware download service for this plugin is provided by [https://github.com/ophub/amlogic-s9xxx-openwrt](https://github.com/ophub/amlogic-s9xxx-openwrt). If you encounter any issues during OpenWrt compilation or usage, please submit feedback on the [Issues](https://github.com/ophub/amlogic-s9xxx-openwrt/issues) page.
 
 - The default OpenWrt kernel for the plugin is provided by [https://github.com/ophub/kernel](https://github.com/ophub/kernel). Among them, kernels under the [kernel_flippy](https://github.com/ophub/kernel/releases/tag/kernel_flippy) tag are stable mainline kernels compiled and shared by developer [flippy](https://github.com/unifreq). For the [kernel_rk3588](https://github.com/ophub/kernel/releases/tag/kernel_rk3588) and [kernel_rk35xx](https://github.com/ophub/kernel/releases/tag/kernel_rk35xx) tags, kernels with `flippy` in their names are Rockchip-specific kernels provided by the same developer, while the rest are compiled by [ophub/kernel](https://github.com/ophub/kernel). Kernels under the [kernel_stable](https://github.com/ophub/kernel/releases/tag/kernel_stable) tag are stable mainline kernels compiled by [ophub/kernel](https://github.com/ophub/kernel).
 
 - Kernels will be deprecated once they reach the end of their lifecycle (EOL). When this occurs, you can select an alternative supported kernel version in the `Plugin Settings` to continue using the service. If certain kernel versions lack a corresponding complete firmware, you can also change the kernel branch in the `Plugin Settings` to match an available version from the download source.
-
 
 ## Plugin User Instructions
 
@@ -138,7 +137,7 @@ Note: Certain functions such as `Install OpenWrt` and `CPU Settings` will be aut
 
 ## KVM Virtual Machine User Instructions
 
-For boxes with surplus processing power, you can first install the [Armbian](https://github.com/ophub/amlogic-s9xxx-armbian) system, then set up KVM virtual machines to run multiple systems simultaneously. The OpenWrt system image can be built using the [mk_qemu-aarch64_img.sh](https://github.com/unifreq/openwrt_packit/blob/master/mk_qemu-aarch64_img.sh) script developed by [unifreq](https://github.com/unifreq/openwrt_packit), with installation and usage instructions detailed in the [qemu-aarch64-readme.md](https://github.com/unifreq/openwrt_packit/blob/master/files/qemu-aarch64/qemu-aarch64-readme.md) document. The OpenWrt QEMU firmware available via `Online Download Update` is provided by [breakingbadboy](https://github.com/breakingbadboy/OpenWrt).
+For boxes with surplus processing power, you can first install the [Armbian](https://github.com/ophub/amlogic-s9xxx-armbian) system, then set up KVM virtual machines to run multiple systems simultaneously. The OpenWrt system image can be built using the [mk_qemu-aarch64_img.sh](https://github.com/unifreq/openwrt_packit/blob/master/mk_qemu-aarch64_img.sh) script developed by [unifreq](https://github.com/unifreq/openwrt_packit), with installation and usage instructions detailed in the [qemu-aarch64-readme.md](https://github.com/unifreq/openwrt_packit/blob/master/files/qemu-aarch64/qemu-aarch64-readme.md) document.
 
 The plugin operates identically in a KVM virtual machine as it does when OpenWrt is installed directly on the box.
 
@@ -147,6 +146,11 @@ The plugin operates identically in a KVM virtual machine as it does when OpenWrt
 Step 1: Compile the Rootfs file: Using the OpenWrt source code, select the `Arm SystemReady (EFI) compliant` option under `Target System`, select `64-bit (armv8) machines` under `Subtarget`, select `Generic EFI Boot` under `Target Profile`, and add the [required software packages](https://github.com/ophub/amlogic-s9xxx-openwrt/blob/main/documents/README.md#1011-required-openwrt-options) to compile the OpenWrt `rootfs.tar.gz` file.
 
 Step 2: Package device-specific OpenWrt firmware: Use the scripts from [flippy](https://github.com/unifreq/openwrt_packit) or [ophub](https://github.com/ophub/amlogic-s9xxx-openwrt) to package device-specific OpenWrt firmware. Refer to the respective repositories for detailed usage instructions.
+
+## Plugin Version Numbering
+
+- The plugin version uses a date + daily sequence format `YY.MM.DDNN`. For example, `26.10.0101` is the 1st release on October 1, 2026, `26.10.0102` is the 2nd release of the same day, and so on.
+- The Releases page provides packages for both Lua and JavaScript branches: the Lua version (lua branch) is tagged `YY.MM.DDNN`, and the JavaScript version (main branch) is tagged `YY.MM.DDNN-js`.
 
 ## Plugin Interface
 
@@ -168,4 +172,4 @@ Step 2: Package device-specific OpenWrt firmware: Use the scripts from [flippy](
 
 ## License
 
-The luci-app-amlogic © OPHUB is licensed under [GPL-2.0](https://github.com/ophub/luci-app-amlogic/blob/main/LICENSE)
+luci-app-amlogic © OPHUB is licensed under [GPL-2.0](https://github.com/ophub/luci-app-amlogic/blob/main/LICENSE)
